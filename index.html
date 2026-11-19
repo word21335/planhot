@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="PlanHot 城乡规划资讯。按地区与栏目查阅已发布资讯，并直接打开来源原文。">
+  <title>PlanHot · 城乡规划资讯</title>
+  <style>
+    :root { color-scheme: light; --ink:#16253a; --muted:#475970; --blue:#184f8b; --line:#dbe4ef; --paper:#fff; --bg:#f1f5fa; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--ink); font:1rem/1.7 system-ui,"Microsoft YaHei",sans-serif; }
+    .wrap { width:min(56rem,calc(100% - 2rem)); margin:auto; }
+    header { background:#092d50; color:#fff; padding:2.2rem 0 2rem; border-bottom:4px solid #55a5ed; }
+    h1 { margin:0; font-size:clamp(2rem,7vw,3rem); line-height:1.2; letter-spacing:-.04em; }
+    header p { margin:.45rem 0 0; color:#d7e8fc; }
+    main { padding:1.4rem 0 2.5rem; }
+    .filters { display:grid; grid-template-columns:2fr 1fr 1fr; gap:.8rem; margin-bottom:.8rem; }
+    label { display:grid; gap:.25rem; font-size:.9rem; font-weight:650; }
+    input,select { width:100%; min-width:0; min-height:2.7rem; color:var(--ink); background:var(--paper); border:1px solid #a9bdd3; border-radius:.45rem; padding:.35rem .65rem; font:inherit; }
+    :focus-visible { outline:3px solid #1684db; outline-offset:3px; }
+    .count,.meta,footer { color:var(--muted); font-size:.9rem; }
+    article { background:var(--paper); border:1px solid var(--line); border-radius:.7rem; padding:1.2rem 1.35rem; margin:.8rem 0; }
+    .meta { display:flex; flex-wrap:wrap; align-items:center; gap:.45rem .8rem; }
+    .category { background:#e4effc; color:#19426d; border-radius:.25rem; padding:.02rem .45rem; font-weight:650; }
+    h2 { font-size:1.2rem; line-height:1.45; margin:.5rem 0; }
+    a { color:var(--blue); text-underline-offset:.2em; }
+    h2 a { color:var(--ink); text-decoration:none; }
+    h2 a:hover { text-decoration:underline; }
+    article p { margin:.45rem 0 .65rem; }
+    .source { font-size:.9rem; }
+    footer { border-top:1px solid var(--line); margin-top:1.5rem; padding-top:.75rem; }
+    @media(max-width:36rem) { .filters { grid-template-columns:1fr 1fr; } .filters label:first-child { grid-column:1/-1; } article { padding:1rem; } }
+  </style>
+</head>
+<body>
+  <header><div class="wrap"><h1>PlanHot</h1><p>城乡规划资讯</p></div></header>
+  <main class="wrap">
+    <div class="filters" hidden id="filters">
+      <label>搜索资讯<input type="search" id="query" placeholder="搜索标题、摘要或来源"></label>
+      <label>栏目<select id="category"><option value="">全部栏目</option><option>政策文件</option><option>标准规范</option><option>注规考试</option><option>规划实践</option><option>规划技术</option><option>研究解读</option><option>其他</option></select></label>
+      <label>地区<select id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select></label>
+    </div>
+    <p class="count" id="count" role="status">共 3 条资讯</p>
+    <p id="empty" hidden>没有符合条件的资讯。可以清空搜索或更换筛选条件。</p>
+    <section aria-label="资讯列表" id="articles">
+<article data-category="规划实践" data-regions="广州">
+  <div class="meta"><span class="category">规划实践</span><span>广州</span><time datetime="2026-11-17">2026-11-17</time></div>
+  <h2><a href="https://ghzyj.gz.gov.cn/zwgk/ztzl/gzscsghwyh/phgg/content/post_11104096.html" target="_blank" rel="noopener noreferrer">广州公布广州东至花都天贵城际沿线地块控规修正成果</a></h2>
+  <p>广州市规划和自然资源局公布了广州东至花都天贵城际沿线地块的控规修正成果。成果获广州市政府批准，自2026年11月7日起生效。具体调整范围以公告附件为准。</p>
+  <a class="source" href="https://ghzyj.gz.gov.cn/zwgk/ztzl/gzscsghwyh/phgg/content/post_11104096.html" target="_blank" rel="noopener noreferrer">原文 · 广州市规划和自然资源局</a>
+</article>
+<article data-category="规划技术" data-regions="">
+  <div class="meta"><span class="category">规划技术</span><time datetime="2026-11-16">2026-11-16</time></div>
+  <h2><a href="https://zrzyt.fujian.gov.cn/jggk/ldzc/zch/zchldhd/202611/t20261116_7249827.htm" target="_blank" rel="noopener noreferrer">福建分享用国土空间规划“一张图”支持低效用地盘活的做法</a></h2>
+  <p>福建省自然资源厅介绍了省级“一张图”在用地用林用草联审、海域海岛管理等场景的应用。泉州市自然资源和规划局在会上分享了利用省级数据底座开展低效用地数字化盘活的经验。</p>
+  <a class="source" href="https://zrzyt.fujian.gov.cn/jggk/ldzc/zch/zchldhd/202611/t20261116_7249827.htm" target="_blank" rel="noopener noreferrer">原文 · 福建省自然资源厅</a>
+</article>
+<article data-category="规划技术" data-regions="">
+  <div class="meta"><span class="category">规划技术</span><time datetime="2026-11-12">2026-11-12</time></div>
+  <h2><a href="https://www.forestry.gov.cn/lyj/1/lcdt/20261112/695904.html" target="_blank" rel="noopener noreferrer">自然资源部和国家林草局研讨国土空间规划“一张图”建设</a></h2>
+  <p>两部门于11月10日在合肥举办建设培训班，提出继续推进空间底图和数据的跨部门、跨层级共享，并探索用时空智能模型支持分析和决策。</p>
+  <a class="source" href="https://www.forestry.gov.cn/lyj/1/lcdt/20261112/695904.html" target="_blank" rel="noopener noreferrer">原文 · 国家林业和草原局</a>
+</article>
+    </section>
+    <footer>网页更新于 2026-11-19。政策、标准和考试信息请以官方原文为准。</footer>
+  </main>
+  <script>
+    const filters = document.getElementById("filters");
+    const query = document.getElementById("query");
+    const category = document.getElementById("category");
+    const region = document.getElementById("region");
+    const cards = [...document.querySelectorAll("#articles article")];
+    function filter() {
+      const search = query.value.trim().toLowerCase();
+      let count = 0;
+      for (const card of cards) {
+        const matches = (!category.value || card.dataset.category === category.value)
+          && (!region.value || card.dataset.regions.split(",").includes(region.value))
+          && (!search || card.textContent.toLowerCase().includes(search));
+        card.hidden = !matches;
+        if (matches) count++;
+      }
+      document.getElementById("count").textContent = "共 " + count + " 条资讯";
+      document.getElementById("empty").hidden = count > 0;
+    }
+    query.addEventListener("input", filter);
+    category.addEventListener("change", filter);
+    region.addEventListener("change", filter);
+    filters.hidden = false;
+  </script>
+</body>
+</html>
