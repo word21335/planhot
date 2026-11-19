@@ -52,18 +52,40 @@
       .count { width:100% }
       article { padding:14px 16px }
     }
+    .brand { display:inline-flex; align-items:center; gap:7px; font-size:24px; text-decoration:none; color:var(--ink) }
+    .brand:before { content:""; width:10px; height:10px; border-radius:50%; background:var(--accent) }
+    .subtitle { margin:30px 10px 8px }
+    .home,.side-link { display:block; border-radius:8px; padding:8px 12px; font-size:14px; color:var(--muted); text-decoration:none }
+    .home { background:#e8f0ee; color:var(--accent); font-weight:700 }
+    .nav { flex-direction:row; overflow-x:auto; gap:4px; margin:16px 0 0 }
+    .nav button { flex:none; padding:6px 11px; font-size:14px; border-radius:20px }
+    .filters { margin:12px 0 24px }
+    .day { margin:22px 0 10px; font-size:16px; color:var(--ink); font-weight:650 }
+    #articles article { position:relative; margin-left:43px }
+    #articles article:before { content:""; position:absolute; top:26px; left:-20px; width:7px; height:7px; border-radius:50%; background:var(--accent) }
+    #articles article:after { content:""; position:absolute; top:39px; bottom:0; left:-17px; width:1px; background:var(--line) }
+    @media(max-width:699px) {
+      aside { padding:8px 16px; background:white }
+      .rail { display:flex; align-items:center; gap:12px }
+      .subtitle,.side-link { display:none }
+      .home { margin-left:auto; padding:4px 10px }
+      .day { margin:20px -16px 0; background:#f0f2ee; padding:7px 16px; font-size:14px }
+      #articles article { margin:0; padding:15px 0; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent }
+      #articles article:before,#articles article:after { display:none }
+    }
   </style>
 </head>
 <body>
   <div class="shell">
-  <aside><div class="rail"><span class="brand">Plan<b>Hot</b></span> <span class="subtitle">城乡规划资讯</span>
-    <nav class="nav" aria-label="资讯栏目" id="sections" hidden></nav>
+  <aside><div class="rail"><a href="#heading" class="brand">PlanHot</a><div class="subtitle">内容</div><a class="home" href="#heading">精选</a><a class="side-link" href="#filters">搜索资讯</a><a class="side-link" href="#articles">资讯时间线</a>
+    
   </div></aside>
   <main>
-    <div class="heading"><h1 id="heading">全部动态</h1></div>
+    <div class="heading"><h1 id="heading">精选</h1></div>
+    <nav class="nav" aria-label="资讯栏目" id="sections" hidden></nav>
     <div class="filters" hidden id="filters">
       <input aria-label="搜索资讯" type="search" id="query" placeholder="搜索标题、摘要或来源">
-      <select id="category" hidden><option value="">全部动态</option><option>政策文件</option><option>标准规范</option><option>注规考试</option><option>规划实践</option><option>规划技术</option><option>研究解读</option><option>其他</option></select>
+      <select id="category" hidden><option value="">全部</option><option>政策文件</option><option>标准规范</option><option>注规考试</option><option>规划实践</option><option>规划技术</option><option>研究解读</option><option>其他</option></select>
       <select aria-label="地区" id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select>
       <span class="count" id="count" role="status">共 3 条资讯</span>
     </div>
@@ -96,6 +118,20 @@
     const category = document.getElementById("category");
     const region = document.getElementById("region");
     const cards = [...document.querySelectorAll("#articles article")];
+    const timeline = new Map();
+    const dateLabel = new Intl.DateTimeFormat("zh-CN", {month:"long", day:"numeric", weekday:"long", timeZone:"Asia/Shanghai"});
+    for (const card of cards) {
+      const day = card.querySelector("time")?.dateTime || "";
+      let group = timeline.get(day);
+      if (!group) {
+        const header = document.createElement("h2");
+        header.className = "day";
+        card.before(header);
+        group = {header, cards: []};
+        timeline.set(day, group);
+      }
+      group.cards.push(card);
+    }
     function filter() {
       const search = query.value.trim().toLowerCase();
       let count = 0;
@@ -105,6 +141,12 @@
           && (!search || card.textContent.toLowerCase().includes(search));
         card.hidden = !matches;
         if (matches) count++;
+      }
+      for (const [day, group] of timeline) {
+        const visible = group.cards.filter(card => !card.hidden).length;
+        group.header.hidden = !visible;
+        const date = day ? dateLabel.format(new Date(day + "T12:00:00+08:00")) : "日期待核";
+        group.header.textContent = date + " · " + visible + " 条";
       }
       document.getElementById("count").textContent = "共 " + count + " 条资讯";
       document.getElementById("empty").hidden = count > 0;
@@ -117,7 +159,7 @@
       button.setAttribute("aria-pressed", String(option.selected));
       button.addEventListener("click", () => {
         category.value = option.value;
-        document.getElementById("heading").textContent = option.text;
+        document.getElementById("heading").textContent = option.value || "精选";
         for (const item of sections.children) item.setAttribute("aria-pressed", String(item === button));
         filter();
       });
@@ -126,6 +168,7 @@
     sections.hidden = false;
     region.addEventListener("change", filter);
     filters.hidden = false;
+    filter();
   </script>
 </body>
 </html>
