@@ -119,16 +119,47 @@
       article time { position:static }
       article h2 { font-size:18px }
     }
+    .rail-nav button,.bookmark { border:0; background:transparent; cursor:pointer; color:var(--muted) }
+    .rail-nav button { display:grid; justify-items:center; align-content:center; gap:4px; height:76px; border-radius:12px; font-size:16px }
+    .rail-nav i { font:28px/1 system-ui }
+    .rail-nav button[aria-pressed=true] { background:#e8eeec; color:#20333b; font-weight:700 }
+    .bookmark { position:absolute; top:20px; right:22px; padding:5px }
+    .bookmark[aria-pressed=true] path { fill:var(--accent) }
+    .controls { display:flex; gap:12px; justify-content:flex-end; align-items:center }
+    .unread { display:flex; align-items:center; gap:6px; padding:5px 12px; background:white; border:1px solid var(--line); border-radius:30px; cursor:pointer }
+    .unread input { flex:none; min-width:0; width:18px; height:18px; accent-color:var(--accent) }
+    .end { text-align:center; padding:24px 0; color:var(--muted) }
+    @media(min-width:901px) {
+      .shell { grid-template-columns:100px minmax(0,1fr) }
+      main { padding:32px 14px 32px 30px }
+      h1 { font-size:36px }
+      .toolbar { margin:22px 0 34px; gap:22px }
+      .nav { flex-wrap:nowrap; padding:4px; height:58px }
+      .nav button { padding:7px 20px; font-size:19px }
+      .filters { width:32%; position:relative }
+      #query { width:100%; height:58px; padding:0 48px 0 20px; font-size:18px }
+      #region { position:absolute; right:6px; width:35px; padding:8px 0; color:transparent; background:transparent; border:0 }
+      #region:focus { width:auto; background:white; color:var(--ink) }
+      #region option { color:var(--ink) }
+      .filters:after { content:"⌄"; pointer-events:none; position:absolute; right:18px; color:var(--muted) }
+      .controls { float:right; position:relative; z-index:1 }
+      .day { font-size:29px; gap:26px; margin:22px 0 15px }
+      .day span { font-size:17px }
+      #articles article { margin-left:125px; padding:20px 26px 24px }
+      #articles article:before { left:-23px; top:34px }
+      article time { left:-125px; top:30px; font:600 14px/1.5 monospace }
+      article .source { font-size:18px }
+      article .meta { padding-right:35px }
+      article h2 { font-size:25px; margin:12px 0 }
+      article p { font-size:21px; line-height:1.75 }
+    }
+    @media(max-width:699px) { .rail-nav button { height:50px; font-size:12px; padding:2px 8px } .rail-nav i { font-size:17px } .meta { padding-right:32px } .bookmark { top:9px; right:0 } }
   </style>
 </head>
 <body>
   <div class="shell">
   <aside><div class="rail"><a href="#heading" class="brand" aria-label="PlanHot 首页"><span></span></a>
-    <nav class="rail-nav" aria-label="主导航">
-      <a class="home" href="#heading" aria-current="page"><span aria-hidden="true">ϟ</span>精选</a>
-      <a class="side-link" href="#sections"><span aria-hidden="true">☷</span>栏目</a>
-      <a class="side-link" href="#articles"><span aria-hidden="true">▤</span>时间线</a>
-    </nav>
+    <nav class="rail-nav" aria-label="主导航"><button type="button" data-view="精选" aria-pressed="true"><i aria-hidden="true">ϟ</i>精选</button><button type="button" data-view="全部" aria-pressed="false"><i aria-hidden="true">☷</i>全部</button><button type="button" data-view="热点" aria-pressed="false"><i aria-hidden="true">♨</i>热点</button><button type="button" data-view="日报" aria-pressed="false"><i aria-hidden="true">▤</i>日报</button><button type="button" data-view="我的" aria-pressed="false"><i aria-hidden="true">♙</i>我的</button></nav>
   </div></aside>
   <main>
     <div class="heading"><h1 id="heading">精选</h1></div>
@@ -136,11 +167,12 @@
     <nav class="nav" aria-label="资讯栏目" id="sections" hidden></nav>
     <div class="filters" hidden id="filters">
       <input aria-label="搜索资讯" type="search" id="query" placeholder="搜索标题、摘要或来源">
-      <select id="category" hidden><option value="">全部</option><option>政策文件</option><option>标准规范</option><option>注规考试</option><option>规划实践</option><option>规划技术</option><option>研究解读</option><option>其他</option></select>
+      <select id="category" hidden><option value="">全部</option><option value="一手">一手</option><option>政策文件</option><option>标准规范</option><option>注规考试</option><option>规划实践</option><option>规划技术</option><option>研究解读</option><option>其他</option></select>
       <select aria-label="地区" id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select>
       <span class="count" id="count" role="status">共 6 条资讯</span>
     </div>
     </div>
+    <div class="controls"><label id="day-picker" hidden>日报日期 <select id="report-day"></select></label><label class="unread"><input type="checkbox" id="unread">只看未读</label></div>
     <p id="empty" hidden>没有符合条件的资讯。可以清空搜索或更换筛选条件。</p>
     <section aria-label="资讯列表" id="articles">
 <article data-category="规划实践" data-regions="广州">
@@ -165,7 +197,7 @@
 <article data-category="标准规范" data-regions="上海"><div class="meta"><span class="category">标准规范</span><span>上海</span><time datetime="2026-09-24">2026-09-24</time></div><h2><a href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260924/0154b35348144527b5846848ce4529cc.html" target="_blank" rel="noopener noreferrer">上海印发城市更新单元规划编制技术指引（2026版）</a></h2><p>这份地方技术指引细化“三师联创”的工作要求，明确城市更新单元规划的研究内容、协作要求和成果形式。原通知附指引全文及官方解读。</p><a class="source" href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260924/0154b35348144527b5846848ce4529cc.html" target="_blank" rel="noopener noreferrer">原文 · 上海市规划和自然资源局</a></article>
 <article data-category="政策文件" data-regions="上海"><div class="meta"><span class="category">政策文件</span><span>上海</span><time datetime="2026-09-04">2026-09-04</time></div><h2><a href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260828/15f956ae58a844ceb7caba8781940458.html" target="_blank" rel="noopener noreferrer">上海印发国土空间近期实施规划（2026—2030年）</a></h2><p>该规划经上海市政府批复，细化上海2035总规在“十五五”时期的实施安排，涵盖城市更新、绿色低碳、交通和公共空间等方面。</p><a class="source" href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260828/15f956ae58a844ceb7caba8781940458.html" target="_blank" rel="noopener noreferrer">原文 · 上海市规划和自然资源局</a></article>
 </section>
-    <footer>网页更新于 2026-11-20。政策、标准和考试信息请以官方原文为准。</footer>
+    <p class="end">已经到底了</p><footer>网页更新于 2026-11-20。政策、标准和考试信息请以官方原文为准。</footer>
   </main></div>
   <script>
     const filters = document.getElementById("filters");
@@ -173,6 +205,22 @@
     const category = document.getElementById("category");
     const region = document.getElementById("region");
     const cards = [...document.querySelectorAll("#articles article")];
+    let view = "精选";
+    const unread = document.querySelector("#unread");
+    const reportDay = document.querySelector("#report-day");
+    function stored(key) {
+      try { return new Set(JSON.parse(localStorage.getItem("planhot-"+key) || "[]")); }
+      catch { return new Set(); }
+    }
+    const read = stored("read"), saved = stored("saved");
+    function persist(key, values) {
+      try { localStorage.setItem("planhot-"+key, JSON.stringify([...values])); } catch {}
+    }
+    const topicCounts = new Map();
+    for (const card of cards) {
+      const topic = card.dataset.category;
+      topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1);
+    }
     const timeline = new Map();
     const dateLabel = new Intl.DateTimeFormat("zh-CN", {month:"long", day:"numeric", weekday:"long", timeZone:"Asia/Shanghai"});
     for (const card of cards) {
@@ -189,12 +237,35 @@
         timeline.set(day, group);
       }
       group.cards.push(card);
+      const link = card.querySelector("h2 a");
+      const url = link.href;
+      const star = document.createElement("button");
+      star.className = "bookmark";
+      star.innerHTML = '<svg width="18" height="22" viewBox="0 0 18 22" aria-hidden="true"><path d="M3 2h12v17l-6-4-6 4z" stroke="currentColor" stroke-width="1.8" fill="none"/></svg>';
+      function mark() {
+        star.setAttribute("aria-pressed", String(saved.has(url)));
+        star.setAttribute("aria-label", (saved.has(url) ? "取消收藏" : "收藏") + link.textContent);
+      }
+      mark();
+      star.onclick = () => {
+        if (saved.has(url)) saved.delete(url); else saved.add(url);
+        persist("saved", saved); mark(); filter();
+      };
+      card.append(star);
+      card.addEventListener("click", e => {
+        if (e.target.closest("a")) { read.add(url); persist("read",read); filter(); }
+      });
     }
     function filter() {
       const search = query.value.trim().toLowerCase();
       let count = 0;
       for (const card of cards) {
-        const matches = (!category.value || card.dataset.category === category.value)
+        const url = card.querySelector("h2 a").href;
+        const matches = (!unread.checked || !read.has(url))
+          && (view !== "我的" || saved.has(url))
+          && (view !== "热点" || topicCounts.get(card.dataset.category) === Math.max(...topicCounts.values()))
+          && (view !== "日报" || card.querySelector("time")?.dateTime === reportDay.value)
+          && (!category.value || category.value === "一手" || card.dataset.category === category.value)
           && (!region.value || card.dataset.regions.split(",").includes(region.value))
           && (!search || card.textContent.toLowerCase().includes(search));
         card.hidden = !matches;
@@ -228,6 +299,20 @@
       });
       sections.append(button);
     }
+    for (const day of timeline.keys()) reportDay.add(new Option(day,day));
+    reportDay.onchange = filter;
+    unread.onchange = filter;
+    for (const item of document.querySelectorAll(".rail-nav button")) item.onclick = () => {
+      view = item.dataset.view;
+      document.querySelector("#day-picker").hidden = view !== "日报";
+      sections.firstElementChild.click();
+      document.querySelector("#heading").textContent = ({"我的":"我的收藏","热点":"热点 · 收录最多的栏目"})[view] || view;
+      for (const other of item.parentNode.children) other.setAttribute("aria-pressed",String(other===item));
+      filter(); window.scrollTo(0,0);
+    };
+    document.addEventListener("keydown", e => {
+      if (e.key === "/" && !["INPUT","SELECT"].includes(document.activeElement.tagName)) { e.preventDefault(); query.focus(); }
+    });
     sections.hidden = false;
     region.addEventListener("change", filter);
     for (const card of cards) {
@@ -235,6 +320,7 @@
       if (source) {
         source.textContent = source.textContent.replace(/^原文 · /, "");
         card.querySelector(".meta").prepend(source);
+        card.querySelector(".category").textContent = "● 精选";
       }
     }
     filters.hidden = false;
