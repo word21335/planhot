@@ -14,6 +14,7 @@ main{width:100%;max-width:max(1200px,calc(270dvh - 236px));min-width:0;margin:0 
 article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px solid var(--line);border-radius:12px;background:white;box-shadow:0 1px 2px #202a3007}article:before{content:"";position:absolute;left:-15px;top:25px;width:7px;height:7px;border-radius:50%;background:var(--accent)}article time{position:absolute;left:-86px;top:17px;font:600 11px/24px ui-monospace,monospace;color:var(--muted)}.meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-height:18px;padding-right:30px;font-size:12.5px;color:var(--muted)}.category{font-size:11px;background:#f5f1e7;color:#795d27;border-radius:12px;padding:0 7px}article h2{font-size:17px;font-weight:650;line-height:1.55;margin:8px 0}article p{font-size:15px;line-height:1.75;color:var(--muted)}.bookmark{position:absolute;right:15px;top:14px;border:0;background:transparent;color:#657176}.bookmark svg{width:15px;height:18px}.bookmark[aria-pressed=true] path{fill:var(--accent)}.end,footer{text-align:center;color:var(--muted);font-size:13px;padding:22px 0}footer{font-size:12px}#empty{clear:both;padding:24px 0}
 @media(min-width:700px) and (max-width:940px){.shell{grid-template-columns:64px minmax(0,1fr)}.rail{padding:20px 6px}.brand{justify-content:center;margin:0 0 20px}.brand span{width:25px;height:25px;background:none;border:3px solid var(--accent);border-right-color:transparent}.brand:after,.rail-nav:before{display:none}.rail-nav button{height:56px;flex-direction:column;justify-content:center;gap:3px;font-size:11px}main{padding:24px 20px}}
 @media(max-width:699px){.shell{display:block}.rail{padding:8px 16px}.brand{font-size:17px;margin:0}.rail-nav{position:fixed;bottom:0;left:0;right:0;z-index:4;display:flex;background:white;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}.rail-nav:before{display:none}.rail-nav button{flex:1;height:52px;flex-direction:column;justify-content:center;gap:2px;font-size:11px}main{padding:12px 16px 60px}.toolbar{flex-wrap:wrap}.filters{width:100%}.controls{float:none;justify-content:flex-end}.day{background:#f0f2ee;margin:12px -16px 0;padding:0 16px}article{border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;background:none;margin:0;padding:14px 0}article:before{display:none}article time{position:static}.bookmark{right:0}.nav{max-width:100%}}
+#more{display:grid;align-items:start;gap:22px;margin-top:20px}#more h2{font-size:14px;color:var(--muted);margin-bottom:8px}.settings{border:1px solid var(--line);background:white;border-radius:12px;overflow:hidden}.settings>*{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:0 16px}.settings>*+*{border-top:1px solid var(--line)}.settings select{border:1px solid var(--line);border-radius:7px;padding:5px;background:var(--bg)}@media(min-width:941px){#more{grid-template-columns:repeat(2,minmax(0,1fr))}}:root[data-dark=true]{color-scheme:dark;--bg:#161d20;--ink:#eaf0ef;--muted:#b2bfbe;--line:#364245;--accent:#70c6cd}:root[data-dark=true] :is(aside,article,.settings,.rail-nav,.unread,select){background:#20292c}:root[data-dark=true] :is(.nav,#query,.day,.category,.nav button[aria-pressed=true],.rail-nav button[aria-pressed=true]){background:#303c40;color:var(--ink)}:root[data-font=browser]{font-family:initial}
 </style>
 </head>
 <body>
@@ -23,7 +24,13 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
   </div></aside>
   <main>
     <div class="heading"><h1 id="heading">精选</h1></div>
-    <div class="toolbar">
+    <section id="more" hidden aria-label="我的">
+      <div class="settings"><a href="#saved">收藏 <span id="saved-count"></span> ›</a>
+      <label>外观<select id="theme"><option value="system">跟随系统</option><option value="light">浅色</option><option value="dark">深色</option></select></label>
+      <label>字体<select id="font"><option value="system">默认字体</option><option value="browser">浏览器默认字体</option></select></label></div>
+      <div><h2>工具与入口</h2><div class="settings"><a href="#all">按栏目浏览 ›</a><a href="#daily">按日期阅读 ›</a></div></div>
+      <div><h2>关于 PlanHot</h2><div class="settings"><a href="https://github.com/word21335/planhot/commits/main/">更新日志 ›</a><a href="https://github.com/word21335/planhot/issues/new">意见反馈 ›</a></div></div>
+    </section><div id="feed"><div class="toolbar">
     <nav class="nav" aria-label="资讯栏目" id="sections" hidden></nav>
     <div class="filters" hidden id="filters">
       <input aria-label="搜索资讯" type="search" id="query" placeholder="搜索标题、摘要或来源">
@@ -57,7 +64,7 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
 <article data-category="标准规范" data-regions="上海"><div class="meta"><span class="category">标准规范</span><span>上海</span><time datetime="2026-09-24">2026-09-24</time></div><h2><a href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260924/0154b35348144527b5846848ce4529cc.html" target="_blank" rel="noopener noreferrer">上海印发城市更新单元规划编制技术指引（2026版）</a></h2><p>这份地方技术指引细化“三师联创”的工作要求，明确城市更新单元规划的研究内容、协作要求和成果形式。原通知附指引全文及官方解读。</p><a class="source" href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260924/0154b35348144527b5846848ce4529cc.html" target="_blank" rel="noopener noreferrer">原文 · 上海市规划和自然资源局</a></article>
 <article data-category="政策文件" data-regions="上海"><div class="meta"><span class="category">政策文件</span><span>上海</span><time datetime="2026-09-04">2026-09-04</time></div><h2><a href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260828/15f956ae58a844ceb7caba8781940458.html" target="_blank" rel="noopener noreferrer">上海印发国土空间近期实施规划（2026—2030年）</a></h2><p>该规划经上海市政府批复，细化上海2035总规在“十五五”时期的实施安排，涵盖城市更新、绿色低碳、交通和公共空间等方面。</p><a class="source" href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260828/15f956ae58a844ceb7caba8781940458.html" target="_blank" rel="noopener noreferrer">原文 · 上海市规划和自然资源局</a></article>
 </section>
-    <p class="end">已经到底了</p><footer>网页更新于 2026-11-20。政策、标准和考试信息请以官方原文为准。</footer>
+    <p class="end">已经到底了</p></div><footer>网页更新于 2026-11-20。政策、标准和考试信息请以官方原文为准。</footer>
   </main></div>
   <script>
     const filters = document.getElementById("filters");
@@ -165,14 +172,40 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
     for (const day of timeline.keys()) reportDay.add(new Option(day,day));
     reportDay.onchange = filter;
     unread.onchange = filter;
-    for (const item of document.querySelectorAll(".rail-nav button")) item.onclick = () => {
-      view = item.dataset.view;
+    const routes = {"精选":"feed","全部":"all","热点":"hot","日报":"daily","我的":"more"};
+    const tabs = [...document.querySelectorAll(".rail-nav button")];
+    function navigate() {
+      const route = location.hash.slice(1) || (/\/more\/?$/.test(location.pathname) ? "more" : "feed");
+      const personal = route === "more";
+      const active = tabs.find(tab => routes[tab.dataset.view] === route) || tabs[route === "saved" ? 4 : 0];
+      view = active.dataset.view;
+      document.querySelector("#more").hidden = !personal;
+      document.querySelector("#feed").hidden = personal;
+      document.querySelector("#saved-count").textContent = saved.size || "";
       document.querySelector("#day-picker").hidden = view !== "日报";
       sections.firstElementChild.click();
-      document.querySelector("#heading").textContent = ({"我的":"我的收藏","热点":"热点 · 收录最多的栏目"})[view] || view;
-      for (const other of item.parentNode.children) other.setAttribute("aria-pressed",String(other===item));
-      filter(); window.scrollTo(0,0);
-    };
+      document.querySelector("#heading").textContent = route === "saved" ? "我的收藏" : view;
+      for (const tab of tabs) tab.setAttribute("aria-pressed", String(tab === active));
+      window.scrollTo(0,0);
+    }
+    for (const tab of tabs) tab.onclick = () => { location.hash = routes[tab.dataset.view]; };
+    document.querySelector(".brand").href = "#feed";
+    window.addEventListener("hashchange",navigate);
+    const scheme = matchMedia("(prefers-color-scheme: dark)");
+    const theme = document.querySelector("#theme"), font = document.querySelector("#font");
+    for (const control of [theme,font]) {
+      try { control.value = localStorage.getItem("planhot-"+control.id) || "system"; } catch {}
+      control.onchange = () => {
+        try { localStorage.setItem("planhot-"+control.id,control.value); } catch {}
+        appearance();
+      };
+    }
+    function appearance() {
+      document.documentElement.dataset.dark = theme.value === "dark" || (theme.value === "system" && scheme.matches);
+      document.documentElement.dataset.font = font.value;
+    }
+    scheme.addEventListener("change",appearance);
+    appearance();
     document.addEventListener("keydown", e => {
       if (e.key === "/" && !["INPUT","SELECT"].includes(document.activeElement.tagName)) { e.preventDefault(); query.focus(); }
     });
@@ -187,7 +220,7 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
       }
     }
     filters.hidden = false;
-    filter();
+    navigate();
   </script>
 </body>
 </html>

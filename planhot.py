@@ -173,6 +173,8 @@ def render():
     out = Path("public")
     out.mkdir(exist_ok=True)
     (out/"index.html").write_text(page, encoding="utf-8")
+    (out/"more").mkdir(exist_ok=True)
+    (out/"more"/"index.html").write_text(page, encoding="utf-8")
 
 
 if __name__ == "__main__":
