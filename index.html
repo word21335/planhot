@@ -6,160 +6,20 @@
   <meta name="description" content="PlanHot 城乡规划资讯。按地区与栏目查阅已发布资讯，并直接打开来源原文。">
   <title>PlanHot · 城乡规划资讯</title>
   <style>
-    :root { --bg:#faf9f6; --ink:#202a30; --muted:#59656b; --accent:#176b75; --line:#dfe4e1; }
-    * { box-sizing:border-box }
-    [hidden] { display:none!important }
-    body { margin:0; background:var(--bg); color:var(--ink); font:16px/1.65 system-ui,"Microsoft YaHei",sans-serif }
-    .shell { display:grid; grid-template-columns:200px minmax(0,1fr); min-height:100vh }
-    aside { background:#fdfdfb; border-right:1px solid var(--line); padding:28px 18px }
-    .rail { position:sticky; top:28px }
-    .brand { color:var(--ink); font-size:26px; font-weight:760; letter-spacing:-1.2px }
-    .brand b { color:var(--accent) }
-    .subtitle,.count,footer,.meta,.source { color:var(--muted); font-size:13px }
-    .nav { display:flex; flex-direction:column; gap:3px; margin-top:30px }
-    button,input,select { font:inherit; color:inherit }
-    .nav button { background:none; border:0; border-radius:8px; cursor:pointer; text-align:left; padding:9px 12px; font-size:15px }
-    .nav button:hover,.nav button[aria-pressed=true] { background:#e9f1ef; color:var(--accent) }
-    .nav button[aria-pressed=true] { font-weight:700 }
-    main { width:min(100%,1120px); padding:32px clamp(20px,4vw,60px); margin:0 auto }
-    h1 { font-size:25px; line-height:1.3; margin:0 }
-    .heading,.filters,.meta { display:flex; align-items:center; gap:12px; flex-wrap:wrap }
-    .heading { justify-content:space-between }
-    .filters { margin:18px 0 22px; gap:8px }
-    input,select { background:white; border:1px solid var(--line); border-radius:8px; padding:8px 12px; font-size:14px; max-width:100% }
-    .count { margin-left:auto }
-    article { border:1px solid var(--line); background:white; border-radius:12px; margin:0 0 12px; padding:18px 22px }
-    .meta { font-size:12px; gap:8px }
-    .category { color:var(--accent); background:#eaf2f1; border-radius:5px; padding:1px 7px }
-    time { margin-left:auto; font-variant-numeric:tabular-nums }
-    h2 { font-size:19px; line-height:1.45; margin:8px 0 }
-    h2 a { color:var(--ink); text-decoration:none }
-    a:hover { color:var(--accent); text-decoration:underline }
-    article p { font-size:15px; color:#303c42; margin:6px 0 10px }
-    .source { text-decoration:none; color:var(--accent) }
-    footer { border-top:1px solid var(--line); padding:16px 0; margin-top:24px }
-    :focus-visible { outline:2px solid var(--accent); outline-offset:2px }
-    @media(max-width:699px) {
-      .shell { display:block }
-      aside { padding:10px 16px 0; border:0; border-bottom:1px solid var(--line) }
-      .brand { font-size:21px }
-      .subtitle { margin-left:8px }
-      .nav { flex-direction:row; overflow-x:auto; margin:8px -4px 0; padding-bottom:8px }
-      .nav button { flex:none; padding:6px 10px; font-size:14px }
-      main { padding:20px 16px }
-      h1 { font-size:22px }
-      input { flex:1; min-width:8em }
-      .count { width:100% }
-      article { padding:14px 16px }
-    }
-    .brand { display:inline-flex; align-items:center; gap:7px; font-size:24px; text-decoration:none; color:var(--ink) }
-    .brand:before { content:""; width:10px; height:10px; border-radius:50%; background:var(--accent) }
-    .subtitle { margin:30px 10px 8px }
-    .home,.side-link { display:block; border-radius:8px; padding:8px 12px; font-size:14px; color:var(--muted); text-decoration:none }
-    .home { background:#e8f0ee; color:var(--accent); font-weight:700 }
-    .nav { flex-direction:row; overflow-x:auto; gap:4px; margin:16px 0 0 }
-    .nav button { flex:none; padding:6px 11px; font-size:14px; border-radius:20px }
-    .filters { margin:12px 0 24px }
-    .day { margin:22px 0 10px; font-size:16px; color:var(--ink); font-weight:650 }
-    #articles article { position:relative; margin-left:43px }
-    #articles article:before { content:""; position:absolute; top:26px; left:-20px; width:7px; height:7px; border-radius:50%; background:var(--accent) }
-    #articles article:after { content:""; position:absolute; top:39px; bottom:0; left:-17px; width:1px; background:var(--line) }
-    @media(max-width:699px) {
-      aside { padding:8px 16px; background:white }
-      .rail { display:flex; align-items:center; gap:12px }
-      .subtitle,.side-link { display:none }
-      .home { margin-left:auto; padding:4px 10px }
-      .day { margin:20px -16px 0; background:#f0f2ee; padding:7px 16px; font-size:14px }
-      #articles article { margin:0; padding:15px 0; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent }
-      #articles article:before,#articles article:after { display:none }
-    }
-    .shell { grid-template-columns:86px minmax(0,1fr) }
-    aside { padding:24px 8px }
-    .rail { top:24px }
-    .brand { display:grid; place-items:center; height:54px; padding:0; margin-bottom:14px }
-    .brand:before { display:none }
-    .brand span { width:29px; height:29px; border:3px solid var(--accent); border-right-color:transparent; border-radius:50%; position:relative; transform:rotate(-28deg) }
-    .brand span:after { content:""; position:absolute; inset:7px; border-radius:50%; background:var(--accent) }
-    .rail-nav { display:grid; gap:4px }
-    .rail-nav a { text-align:center; padding:8px 2px }
-    .rail-nav span { display:block; font-size:23px; line-height:1.2 }
-    main { max-width:1400px; width:100%; padding:28px 26px }
-    h1 { font-size:30px }
-    .toolbar { display:flex; align-items:center; gap:14px; margin:17px 0 28px }
-    .nav { flex:1; min-width:0; margin:0; padding:3px; border-radius:24px; background:#f0f1ee; scrollbar-width:thin }
-    .nav button[aria-pressed=true] { background:white; box-shadow:0 0 0 1px var(--line); color:var(--ink) }
-    .filters { flex:none; flex-wrap:nowrap; gap:6px; margin:0 }
-    input,select { border-radius:24px; background:#f0f1ee }
-    .count { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%) }
-    .day { display:flex; align-items:baseline; gap:16px; margin:22px 0 13px; font-size:23px }
-    .day span { color:var(--muted); font-size:14px; font-weight:400 }
-    #articles article { margin-left:99px; padding:17px 22px; border-radius:15px }
-    #articles article:before { left:-18px; top:29px; width:9px; height:9px }
-    #articles article:after { display:none }
-    article .source { color:var(--muted); font-size:14px }
-    article .category { color:#725b30; background:#f5f1e7; border-radius:12px }
-    article time { position:absolute; top:26px; left:-99px; font-size:12px }
-    article h2 { font-size:21px; margin:9px 0 }
-    article p { font-size:16px; line-height:1.7; color:var(--muted); margin:0 }
-    footer { text-align:center }
-    @media(max-width:900px) { .toolbar { flex-wrap:wrap } .nav { flex-basis:100% } }
-    @media(max-width:699px) {
-      aside { padding:0 16px }
-      .rail { justify-content:space-between }
-      .brand { margin:0 }
-      .rail-nav { display:flex; align-items:center }
-      .rail-nav a { padding:5px 9px }
-      .rail-nav .side-link { display:block }
-      .rail-nav span { display:none }
-      main { padding:20px 16px }
-      h1 { font-size:25px }
-      .filters { width:100% }
-      .day { font-size:17px }
-      #articles article { margin-left:0; padding:15px 0; border-radius:0 }
-      article time { position:static }
-      article h2 { font-size:18px }
-    }
-    .rail-nav button,.bookmark { border:0; background:transparent; cursor:pointer; color:var(--muted) }
-    .rail-nav button { display:grid; justify-items:center; align-content:center; gap:4px; height:76px; border-radius:12px; font-size:16px }
-    .rail-nav i { font:28px/1 system-ui }
-    .rail-nav button[aria-pressed=true] { background:#e8eeec; color:#20333b; font-weight:700 }
-    .bookmark { position:absolute; top:20px; right:22px; padding:5px }
-    .bookmark[aria-pressed=true] path { fill:var(--accent) }
-    .controls { display:flex; gap:12px; justify-content:flex-end; align-items:center }
-    .unread { display:flex; align-items:center; gap:6px; padding:5px 12px; background:white; border:1px solid var(--line); border-radius:30px; cursor:pointer }
-    .unread input { flex:none; min-width:0; width:18px; height:18px; accent-color:var(--accent) }
-    .end { text-align:center; padding:24px 0; color:var(--muted) }
-    @media(min-width:901px) {
-      .shell { grid-template-columns:100px minmax(0,1fr) }
-      main { padding:32px 14px 32px 30px }
-      h1 { font-size:36px }
-      .toolbar { margin:22px 0 34px; gap:22px }
-      .nav { flex-wrap:nowrap; padding:4px; height:58px }
-      .nav button { padding:7px 20px; font-size:19px }
-      .filters { width:32%; position:relative }
-      #query { width:100%; height:58px; padding:0 48px 0 20px; font-size:18px }
-      #region { position:absolute; right:6px; width:35px; padding:8px 0; color:transparent; background:transparent; border:0 }
-      #region:focus { width:auto; background:white; color:var(--ink) }
-      #region option { color:var(--ink) }
-      .filters:after { content:"⌄"; pointer-events:none; position:absolute; right:18px; color:var(--muted) }
-      .controls { float:right; position:relative; z-index:1 }
-      .day { font-size:29px; gap:26px; margin:22px 0 15px }
-      .day span { font-size:17px }
-      #articles article { margin-left:125px; padding:20px 26px 24px }
-      #articles article:before { left:-23px; top:34px }
-      article time { left:-125px; top:30px; font:600 14px/1.5 monospace }
-      article .source { font-size:18px }
-      article .meta { padding-right:35px }
-      article h2 { font-size:25px; margin:12px 0 }
-      article p { font-size:21px; line-height:1.75 }
-    }
-    @media(max-width:699px) { .rail-nav button { height:50px; font-size:12px; padding:2px 8px } .rail-nav i { font-size:17px } .meta { padding-right:32px } .bookmark { top:9px; right:0 } }
-  </style>
+:root{--bg:#faf9f6;--ink:#202a30;--muted:#59656b;--accent:#176b75;--line:#dfe4e1;font:16px/1.5 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;color:var(--ink);background:var(--bg)}
+*{box-sizing:border-box}body,h1,h2,p{margin:0}[hidden]{display:none!important}button,input,select{font:inherit;color:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}a:hover{color:var(--accent)}:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.shell{display:grid;grid-template-columns:180px minmax(0,1fr);min-height:100vh}aside{background:#fdfdfb;border-right:1px solid var(--line)}.rail{position:sticky;top:0;padding:24px 12px}.brand{display:flex;align-items:center;gap:7px;font-size:22px;font-weight:850;margin:0 10px 24px}.brand span{width:9px;height:9px;background:var(--accent);border-radius:50%}.brand:after{content:"PlanHot"}.rail-nav{display:grid;gap:4px}.rail-nav:before{content:"内容";font-size:11px;color:var(--muted);padding:0 10px 6px}.rail-nav button{display:flex;align-items:center;gap:10px;height:40px;padding:0 10px;border:0;border-radius:8px;background:none;color:var(--muted);font-size:14px}.rail-nav button[aria-pressed=true]{background:#e7eeec;color:var(--ink);font-weight:650}.rail-nav i{width:22px;display:grid;place-items:center;font:19px/1 system-ui}.rail-nav svg{width:18px;height:18px}
+main{width:100%;max-width:max(1200px,calc(270dvh - 236px));min-width:0;margin:0 auto;padding:24px 28px}h1{font-size:24px;line-height:1.3;font-weight:650}.toolbar{display:flex;gap:16px;align-items:center;margin:16px 0 20px}.nav{display:flex;overflow:auto;min-width:0;gap:2px;scrollbar-width:none;border-radius:22px;background:#f3f3ef;padding:3px}.nav button{border:0;border-radius:22px;background:transparent;padding:8px 15px;white-space:nowrap;font-size:14px}.nav button[aria-pressed=true]{background:white;box-shadow:0 0 0 1px var(--line)}.filters{display:flex;align-items:center;position:relative;margin-left:auto;width:clamp(180px,25%,280px);flex:none}.filters:before{content:"⚲";position:absolute;left:14px;transform:rotate(-45deg);color:var(--muted)}#query{height:42px;width:100%;padding:0 38px;border-radius:24px;background:#f3f3ef;border:1px solid #e9ede9;font-size:14px}.controls{float:right;position:relative;z-index:2;display:flex;align-items:center;gap:8px;min-height:44px}.controls select{max-width:9em;background:white;border:1px solid var(--line);border-radius:16px;padding:4px 6px;font-size:12px}.unread{display:flex;align-items:center;gap:6px;padding:4px 10px;background:white;border:1px solid var(--line);border-radius:22px;font-size:13px;cursor:pointer}.unread input{accent-color:var(--accent)}.count{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+.day{display:flex;align-items:center;gap:12px;min-height:44px;margin:8px 0 4px;font-size:18px}.day button{font:inherit;font-weight:650;background:none;border:0;padding:0}.day button:after{content:"⌄";font-size:13px;color:var(--muted);margin-left:14px}.day button[aria-expanded=false]:after{content:"›"}.day span{font-size:13px;font-weight:400;color:var(--muted)}
+article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px solid var(--line);border-radius:12px;background:white;box-shadow:0 1px 2px #202a3007}article:before{content:"";position:absolute;left:-15px;top:25px;width:7px;height:7px;border-radius:50%;background:var(--accent)}article time{position:absolute;left:-86px;top:17px;font:600 11px/24px ui-monospace,monospace;color:var(--muted)}.meta{display:flex;align-items:center;flex-wrap:wrap;gap:8px;min-height:18px;padding-right:30px;font-size:12.5px;color:var(--muted)}.category{font-size:11px;background:#f5f1e7;color:#795d27;border-radius:12px;padding:0 7px}article h2{font-size:17px;font-weight:650;line-height:1.55;margin:8px 0}article p{font-size:15px;line-height:1.75;color:var(--muted)}.bookmark{position:absolute;right:15px;top:14px;border:0;background:transparent;color:#657176}.bookmark svg{width:15px;height:18px}.bookmark[aria-pressed=true] path{fill:var(--accent)}.end,footer{text-align:center;color:var(--muted);font-size:13px;padding:22px 0}footer{font-size:12px}#empty{clear:both;padding:24px 0}
+@media(min-width:700px) and (max-width:940px){.shell{grid-template-columns:64px minmax(0,1fr)}.rail{padding:20px 6px}.brand{justify-content:center;margin:0 0 20px}.brand span{width:25px;height:25px;background:none;border:3px solid var(--accent);border-right-color:transparent}.brand:after,.rail-nav:before{display:none}.rail-nav button{height:56px;flex-direction:column;justify-content:center;gap:3px;font-size:11px}main{padding:24px 20px}}
+@media(max-width:699px){.shell{display:block}.rail{padding:8px 16px}.brand{font-size:17px;margin:0}.rail-nav{position:fixed;bottom:0;left:0;right:0;z-index:4;display:flex;background:white;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}.rail-nav:before{display:none}.rail-nav button{flex:1;height:52px;flex-direction:column;justify-content:center;gap:2px;font-size:11px}main{padding:12px 16px 60px}.toolbar{flex-wrap:wrap}.filters{width:100%}.controls{float:none;justify-content:flex-end}.day{background:#f0f2ee;margin:12px -16px 0;padding:0 16px}article{border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;background:none;margin:0;padding:14px 0}article:before{display:none}article time{position:static}.bookmark{right:0}.nav{max-width:100%}}
+</style>
 </head>
 <body>
   <div class="shell">
   <aside><div class="rail"><a href="#heading" class="brand" aria-label="PlanHot 首页"><span></span></a>
-    <nav class="rail-nav" aria-label="主导航"><button type="button" data-view="精选" aria-pressed="true"><i aria-hidden="true">ϟ</i>精选</button><button type="button" data-view="全部" aria-pressed="false"><i aria-hidden="true">☷</i>全部</button><button type="button" data-view="热点" aria-pressed="false"><i aria-hidden="true">♨</i>热点</button><button type="button" data-view="日报" aria-pressed="false"><i aria-hidden="true">▤</i>日报</button><button type="button" data-view="我的" aria-pressed="false"><i aria-hidden="true">♙</i>我的</button></nav>
+    <nav class="rail-nav" aria-label="主导航"><button type="button" data-view="精选" aria-pressed="true"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2.5L4.5 13.5H11l-1 8L19.5 10.5H13z"></path></svg></i>精选</button><button type="button" data-view="全部" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"></path><circle cx="3.5" cy="6" r="1"></circle><circle cx="3.5" cy="12" r="1"></circle><circle cx="3.5" cy="18" r="1"></circle></svg></i>全部</button><button type="button" data-view="热点" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4 0 7-2.7 7-7 0-3.6-2.4-6.2-4-8-.5 2-1.6 3.4-3 4 .3-3-1-6-4-8 0 4-4 6.5-4 11 0 4.3 3 8 8 8z"></path></svg></i>热点</button><button type="button" data-view="日报" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"></rect><path d="M8.5 8h7M8.5 12h7M8.5 16h4"></path></svg></i>日报</button><button type="button" data-view="我的" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.8"></circle><path d="M4.8 20.2c.9-3.5 3.8-5.7 7.2-5.7s6.3 2.2 7.2 5.7"></path></svg></i>我的</button></nav>
   </div></aside>
   <main>
     <div class="heading"><h1 id="heading">精选</h1></div>
@@ -168,11 +28,11 @@
     <div class="filters" hidden id="filters">
       <input aria-label="搜索资讯" type="search" id="query" placeholder="搜索标题、摘要或来源">
       <select id="category" hidden><option value="">全部</option><option value="一手">一手</option><option>政策文件</option><option>标准规范</option><option>注规考试</option><option>规划实践</option><option>规划技术</option><option>研究解读</option><option>其他</option></select>
-      <select aria-label="地区" id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select>
+      
       <span class="count" id="count" role="status">共 6 条资讯</span>
     </div>
     </div>
-    <div class="controls"><label id="day-picker" hidden>日报日期 <select id="report-day"></select></label><label class="unread"><input type="checkbox" id="unread">只看未读</label></div>
+    <div class="controls"><label id="day-picker" hidden>日报日期 <select id="report-day"></select></label><select aria-label="地区" id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select><label class="unread"><input type="checkbox" id="unread">只看未读</label></div>
     <p id="empty" hidden>没有符合条件的资讯。可以清空搜索或更换筛选条件。</p>
     <section aria-label="资讯列表" id="articles">
 <article data-category="规划实践" data-regions="广州">
@@ -228,7 +88,9 @@
       let group = timeline.get(day);
       if (!group) {
         const header = document.createElement("h2");
-        const label = document.createElement("strong");
+        const label = document.createElement("button");
+        label.setAttribute("aria-expanded","true");
+        label.onclick = () => { group.collapsed = !group.collapsed; label.setAttribute("aria-expanded",String(!group.collapsed)); filter(); };
         const details = document.createElement("span");
         header.append(label, details);
         header.className = "day";
@@ -274,6 +136,7 @@
       for (const [day, group] of timeline) {
         const visible = group.cards.filter(card => !card.hidden).length;
         group.header.hidden = !visible;
+        if (group.collapsed) for (const card of group.cards) card.hidden = true;
         const date = day ? new Date(day + "T12:00:00+08:00") : null;
         const parts = date ? dateLabel.formatToParts(date) : [];
         const month = parts.find(part => part.type === "month")?.value;
