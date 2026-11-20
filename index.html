@@ -73,21 +73,73 @@
       #articles article { margin:0; padding:15px 0; border:0; border-bottom:1px solid var(--line); border-radius:0; background:transparent }
       #articles article:before,#articles article:after { display:none }
     }
+    .shell { grid-template-columns:86px minmax(0,1fr) }
+    aside { padding:24px 8px }
+    .rail { top:24px }
+    .brand { display:grid; place-items:center; height:54px; padding:0; margin-bottom:14px }
+    .brand:before { display:none }
+    .brand span { width:29px; height:29px; border:3px solid var(--accent); border-right-color:transparent; border-radius:50%; position:relative; transform:rotate(-28deg) }
+    .brand span:after { content:""; position:absolute; inset:7px; border-radius:50%; background:var(--accent) }
+    .rail-nav { display:grid; gap:4px }
+    .rail-nav a { text-align:center; padding:8px 2px }
+    .rail-nav span { display:block; font-size:23px; line-height:1.2 }
+    main { max-width:1400px; width:100%; padding:28px 26px }
+    h1 { font-size:30px }
+    .toolbar { display:flex; align-items:center; gap:14px; margin:17px 0 28px }
+    .nav { flex:1; min-width:0; margin:0; padding:3px; border-radius:24px; background:#f0f1ee; scrollbar-width:thin }
+    .nav button[aria-pressed=true] { background:white; box-shadow:0 0 0 1px var(--line); color:var(--ink) }
+    .filters { flex:none; flex-wrap:nowrap; gap:6px; margin:0 }
+    input,select { border-radius:24px; background:#f0f1ee }
+    .count { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%) }
+    .day { display:flex; align-items:baseline; gap:16px; margin:22px 0 13px; font-size:23px }
+    .day span { color:var(--muted); font-size:14px; font-weight:400 }
+    #articles article { margin-left:99px; padding:17px 22px; border-radius:15px }
+    #articles article:before { left:-18px; top:29px; width:9px; height:9px }
+    #articles article:after { display:none }
+    article .source { color:var(--muted); font-size:14px }
+    article .category { color:#725b30; background:#f5f1e7; border-radius:12px }
+    article time { position:absolute; top:26px; left:-99px; font-size:12px }
+    article h2 { font-size:21px; margin:9px 0 }
+    article p { font-size:16px; line-height:1.7; color:var(--muted); margin:0 }
+    footer { text-align:center }
+    @media(max-width:900px) { .toolbar { flex-wrap:wrap } .nav { flex-basis:100% } }
+    @media(max-width:699px) {
+      aside { padding:0 16px }
+      .rail { justify-content:space-between }
+      .brand { margin:0 }
+      .rail-nav { display:flex; align-items:center }
+      .rail-nav a { padding:5px 9px }
+      .rail-nav .side-link { display:block }
+      .rail-nav span { display:none }
+      main { padding:20px 16px }
+      h1 { font-size:25px }
+      .filters { width:100% }
+      .day { font-size:17px }
+      #articles article { margin-left:0; padding:15px 0; border-radius:0 }
+      article time { position:static }
+      article h2 { font-size:18px }
+    }
   </style>
 </head>
 <body>
   <div class="shell">
-  <aside><div class="rail"><a href="#heading" class="brand">PlanHot</a><div class="subtitle">内容</div><a class="home" href="#heading">精选</a><a class="side-link" href="#filters">搜索资讯</a><a class="side-link" href="#articles">资讯时间线</a>
-    
+  <aside><div class="rail"><a href="#heading" class="brand" aria-label="PlanHot 首页"><span></span></a>
+    <nav class="rail-nav" aria-label="主导航">
+      <a class="home" href="#heading" aria-current="page"><span aria-hidden="true">ϟ</span>精选</a>
+      <a class="side-link" href="#sections"><span aria-hidden="true">☷</span>栏目</a>
+      <a class="side-link" href="#articles"><span aria-hidden="true">▤</span>时间线</a>
+    </nav>
   </div></aside>
   <main>
     <div class="heading"><h1 id="heading">精选</h1></div>
+    <div class="toolbar">
     <nav class="nav" aria-label="资讯栏目" id="sections" hidden></nav>
     <div class="filters" hidden id="filters">
       <input aria-label="搜索资讯" type="search" id="query" placeholder="搜索标题、摘要或来源">
       <select id="category" hidden><option value="">全部</option><option>政策文件</option><option>标准规范</option><option>注规考试</option><option>规划实践</option><option>规划技术</option><option>研究解读</option><option>其他</option></select>
       <select aria-label="地区" id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select>
-      <span class="count" id="count" role="status">共 3 条资讯</span>
+      <span class="count" id="count" role="status">共 6 条资讯</span>
+    </div>
     </div>
     <p id="empty" hidden>没有符合条件的资讯。可以清空搜索或更换筛选条件。</p>
     <section aria-label="资讯列表" id="articles">
@@ -109,8 +161,11 @@
   <p>两部门于11月10日在合肥举办建设培训班，提出继续推进空间底图和数据的跨部门、跨层级共享，并探索用时空智能模型支持分析和决策。</p>
   <a class="source" href="https://www.forestry.gov.cn/lyj/1/lcdt/20261112/695904.html" target="_blank" rel="noopener noreferrer">原文 · 国家林业和草原局</a>
 </article>
-    </section>
-    <footer>网页更新于 2026-11-19。政策、标准和考试信息请以官方原文为准。</footer>
+<article data-category="政策文件" data-regions="上海"><div class="meta"><span class="category">政策文件</span><span>上海</span><time datetime="2026-10-13">2026-10-13</time></div><h2><a href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20261013/fd477687c79a47bb96eeda81ee06597d.html" target="_blank" rel="noopener noreferrer">上海发布详细规划实施图则动态维护指导意见</a></h2><p>明确详细规划实施阶段局部技术性数据维护的适用范围、办理分工和公开程序，并附适用清单。符合条件的事项可在更新国土空间规划“一张图”后办理相关手续。</p><a class="source" href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20261013/fd477687c79a47bb96eeda81ee06597d.html" target="_blank" rel="noopener noreferrer">原文 · 上海市规划和自然资源局</a></article>
+<article data-category="标准规范" data-regions="上海"><div class="meta"><span class="category">标准规范</span><span>上海</span><time datetime="2026-09-24">2026-09-24</time></div><h2><a href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260924/0154b35348144527b5846848ce4529cc.html" target="_blank" rel="noopener noreferrer">上海印发城市更新单元规划编制技术指引（2026版）</a></h2><p>这份地方技术指引细化“三师联创”的工作要求，明确城市更新单元规划的研究内容、协作要求和成果形式。原通知附指引全文及官方解读。</p><a class="source" href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260924/0154b35348144527b5846848ce4529cc.html" target="_blank" rel="noopener noreferrer">原文 · 上海市规划和自然资源局</a></article>
+<article data-category="政策文件" data-regions="上海"><div class="meta"><span class="category">政策文件</span><span>上海</span><time datetime="2026-09-04">2026-09-04</time></div><h2><a href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260828/15f956ae58a844ceb7caba8781940458.html" target="_blank" rel="noopener noreferrer">上海印发国土空间近期实施规划（2026—2030年）</a></h2><p>该规划经上海市政府批复，细化上海2035总规在“十五五”时期的实施安排，涵盖城市更新、绿色低碳、交通和公共空间等方面。</p><a class="source" href="https://ghzyj.sh.gov.cn/zcwj/cxgh/20260828/15f956ae58a844ceb7caba8781940458.html" target="_blank" rel="noopener noreferrer">原文 · 上海市规划和自然资源局</a></article>
+</section>
+    <footer>网页更新于 2026-11-20。政策、标准和考试信息请以官方原文为准。</footer>
   </main></div>
   <script>
     const filters = document.getElementById("filters");
@@ -125,9 +180,12 @@
       let group = timeline.get(day);
       if (!group) {
         const header = document.createElement("h2");
+        const label = document.createElement("strong");
+        const details = document.createElement("span");
+        header.append(label, details);
         header.className = "day";
         card.before(header);
-        group = {header, cards: []};
+        group = {header, label, details, cards: []};
         timeline.set(day, group);
       }
       group.cards.push(card);
@@ -145,8 +203,13 @@
       for (const [day, group] of timeline) {
         const visible = group.cards.filter(card => !card.hidden).length;
         group.header.hidden = !visible;
-        const date = day ? dateLabel.format(new Date(day + "T12:00:00+08:00")) : "日期待核";
-        group.header.textContent = date + " · " + visible + " 条";
+        const date = day ? new Date(day + "T12:00:00+08:00") : null;
+        const parts = date ? dateLabel.formatToParts(date) : [];
+        const month = parts.find(part => part.type === "month")?.value;
+        const dayOfMonth = parts.find(part => part.type === "day")?.value;
+        const weekday = parts.find(part => part.type === "weekday")?.value;
+        group.label.textContent = date ? month.replace(/月$/, "") + "月" + dayOfMonth + "日" : "日期待核";
+        group.details.textContent = [weekday, visible + " 条"].filter(Boolean).join(" · ");
       }
       document.getElementById("count").textContent = "共 " + count + " 条资讯";
       document.getElementById("empty").hidden = count > 0;
@@ -167,6 +230,13 @@
     }
     sections.hidden = false;
     region.addEventListener("change", filter);
+    for (const card of cards) {
+      const source = card.querySelector(".source");
+      if (source) {
+        source.textContent = source.textContent.replace(/^原文 · /, "");
+        card.querySelector(".meta").prepend(source);
+      }
+    }
     filters.hidden = false;
     filter();
   </script>
