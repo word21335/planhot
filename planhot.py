@@ -123,13 +123,13 @@ def scan(dry):
                 if marker in known or escape(url, quote=True) in homepage:
                     continue
                 known.add(marker)
-                decision = dict(**row, date="请填原文发布日期 YYYY-MM-DD", summary="", withdraw=[])
+                decision = dict(**row, date="请填原文发布日期 YYYY-MM-DD", summary="", event="", reviewed="", until="", withdraw=[])
                 params = urlencode({"filename": f"decisions/{marker}.json", "value": json.dumps(decision, ensure_ascii=False, indent=2)})
                 label = "疑似效力变更" if NOTICE.search(row["title"]) else "待核对"
                 title = escape(row["title"]).replace("[", "［").replace("]", "］").replace("@", "＠")
                 lines.append(f"<!-- planhot:{marker} -->\n- **{label}** {title}（{name}） [官方原文](<{url}>) · [审核并发布](https://github.com/{repo}/new/main?{params})")
     if lines and not dry:
-        intro = "打开原文核对发布日期、现行效力和考试时限。首次扫描含已有文件。只提交确认有效的条目。填入 date，可补 summary。失效旧条目的原文网址填入 withdraw 数组；只撤下旧文时将 category 改为 撤下。关闭此清单即归档。\n\n"
+        intro = "打开原文核对发布日期、现行效力和考试时限。首次扫描含已有文件。只提交确认有效的条目。填入 date，可补 summary。同一事件的转载共用 event。政策、标准和考试核实后填写 reviewed（核对日期），until 填截止或失效前最后有效日；考试必须填写截止日才可上热点榜。失效旧条目的原文网址填入 withdraw 数组；只撤下旧文时将 category 改为 撤下。关闭此清单即归档。\n\n"
         # Keep issue bodies below GitHub's length limit.
         for start in range(0, len(lines), 12):
             gh("issue", "create", "--repo", repo, "--title", f"规划资讯待审核 · {TODAY} · {start//12+1}", "--body", intro+"\n\n".join(lines[start:start+12]))
@@ -163,8 +163,15 @@ def render():
         if issued > TODAY or row["category"] not in CATEGORIES:
             raise ValueError("请核对发布日期和栏目")
         cat, region, title, source, summary = [escape(row[k]) for k in ("category","region","title","source","summary")]
+        reviewed = row.get("reviewed") or ""
+        until = row.get("until") or ""
+        if reviewed and not issued <= date.fromisoformat(reviewed) <= TODAY:
+            raise ValueError("请核对核验日期")
+        if until:
+            date.fromisoformat(until)
+        event = escape(row.get("event") or "")
         link = escape(url)
-        cards[url] = f'<article data-category="{cat}" data-regions="{region}"><div class="meta"><span class="category">{cat}</span><span>{region}</span><time datetime="{issued}">{issued}</time></div><h2><a href="{link}" target="_blank" rel="noopener noreferrer">{title}</a></h2><p>{summary}</p><a class="source" href="{link}" target="_blank" rel="noopener noreferrer">原文 · {source}</a></article>'
+        cards[url] = f'<article data-reviewed="{reviewed}" data-until="{until}" data-event="{event}" data-category="{cat}" data-regions="{region}"><div class="meta"><span class="category">{cat}</span><span>{region}</span><time datetime="{issued}">{issued}</time></div><h2><a href="{link}" target="_blank" rel="noopener noreferrer">{title}</a></h2><p>{summary}</p><a class="source" href="{link}" target="_blank" rel="noopener noreferrer">原文 · {source}</a></article>'
     cards = [card for url,card in cards.items() if url not in removed]
     cards.sort(key=lambda card: (re.search(r'datetime="([^"]+)"', card) or ["",""])[1], reverse=True)
     page = page[:match.start(2)]+"\n"+"\n".join(cards)+"\n"+page[match.end(2):]

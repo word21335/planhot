@@ -41,7 +41,7 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
       <span class="count" id="count" role="status">共 6 条资讯</span>
     </div>
     </div>
-    <section id="highlights" hidden><header><h2>当前规划热点</h2><a href="#hot">查看榜单 ›</a></header><ol id="ranked"></ol></section>
+    <section id="highlights" hidden><header><h2>近 7 天规划热点</h2><a href="#hot">查看榜单 ›</a></header><ol id="ranked"></ol><p id="no-hot" hidden>近 7 天暂无符合条件的已核实事件。</p></section>
     <div class="controls"><label id="day-picker" hidden>日报日期 <select id="report-day"></select></label><select aria-label="地区" id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select><label class="unread"><input type="checkbox" id="unread">只看未读</label></div>
     <p id="empty" hidden>没有符合条件的资讯。可以清空搜索或更换筛选条件。</p>
     <section aria-label="资讯列表" id="articles">
@@ -86,10 +86,41 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
     function persist(key, values) {
       try { localStorage.setItem("planhot-"+key, JSON.stringify([...values])); } catch {}
     }
-    const topicCounts = new Map();
-    for (const card of cards) {
-      const topic = card.dataset.category;
-      topicCounts.set(topic, (topicCounts.get(topic) || 0) + 1);
+    const hotCards = new Set();
+    function refreshRanking() {
+      const today = new Intl.DateTimeFormat("sv-SE",{timeZone:"Asia/Shanghai"}).format(new Date());
+      const events = [];
+      for (const card of cards) {
+        const date = card.querySelector("time")?.dateTime;
+        const age = (Date.parse(today) - Date.parse(date)) / 86400000;
+        if (!(age >= 0 && age < 7)) continue;
+        const {category, until, reviewed, event} = card.dataset;
+        if (["政策文件","标准规范","注规考试"].includes(category) && !reviewed) continue;
+        if ((until && until < today) || (category === "注规考试" && !until)) continue;
+        const link = card.querySelector("h2 a");
+        const title = link.textContent.trim();
+        const identity = event || title.replace(/^(?:转发|转载|关于印发)/,"").replace(/[\s《》【】：“”]/g,"");
+        const nationwide = /自然资源部|住房和城乡建设部|国务院|国家林草局|国家林业和草原局/.test(title + card.querySelector(".source").textContent);
+        const impact = /生效|换版|实施日期|报名|准考证|批复|实施细则/.test(title+" "+card.querySelector("p").textContent);
+        const score = (impact ? 7 : 0) + (nationwide ? 3 : card.dataset.regions ? 2 : 0) + 6 - age;
+        events.push({card, link, title, date, identity, score});
+      }
+      events.sort((a,b) => b.score-a.score || b.date.localeCompare(a.date));
+      hotCards.clear();
+      const seen = new Set();
+      const list = document.querySelector("#ranked");
+      list.replaceChildren();
+      for (const item of events) {
+        if (seen.has(item.identity)) continue;
+        seen.add(item.identity); hotCards.add(item.card);
+        const entry = document.createElement("li");
+        const link = item.link.cloneNode(true);
+        link.addEventListener("click", () => {read.add(link.href); persist("read",read); filter();});
+        const date = document.createElement("small");
+        date.textContent = item.date.slice(5);
+        link.append(date); entry.append(link); list.append(entry);
+      }
+      document.querySelector("#no-hot").hidden = hotCards.size > 0;
     }
     const timeline = new Map();
     const dateLabel = new Intl.DateTimeFormat("zh-CN", {month:"long", day:"numeric", weekday:"long", timeZone:"Asia/Shanghai"});
@@ -135,7 +166,7 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
         const url = card.querySelector("h2 a").href;
         const matches = (!unread.checked || !read.has(url))
           && (view !== "我的" || saved.has(url))
-          && (view !== "热点" || topicCounts.get(card.dataset.category) === Math.max(...topicCounts.values()))
+          && (view !== "热点" || hotCards.has(card))
           && (view !== "日报" || card.querySelector("time")?.dateTime === reportDay.value)
           && (!category.value || category.value === "一手" || card.dataset.category === category.value)
           && (!region.value || card.dataset.regions.split(",").includes(region.value))
@@ -176,16 +207,9 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
     for (const day of timeline.keys()) reportDay.add(new Option(day,day));
     reportDay.onchange = filter;
     unread.onchange = filter;
-    const topics = [...topicCounts].sort((a,b) => b[1]-a[1]);
-    for (const [name,total] of topics) {
-      const entry = document.createElement("li");
-      const link = document.createElement("a");
-      link.href = "#topic-"+encodeURIComponent(name);
-      link.textContent = name;
-      const count = document.createElement("small");
-      count.textContent = "收录 "+total+" 条";
-      link.append(count); entry.append(link); document.querySelector("#ranked").append(entry);
-    }
+    refreshRanking();
+    window.addEventListener("pageshow", () => { refreshRanking(); filter(); });
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) { refreshRanking(); filter(); } });
     for (const name of ["政策文件","标准规范","注规考试","规划技术"]) {
       const link = document.createElement("a");
       link.href = "#topic-"+encodeURIComponent(name);
