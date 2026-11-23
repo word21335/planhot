@@ -1,4 +1,4 @@
-from html import escape
+from html import escape, unescape
 from html.parser import HTMLParser
 from urllib.parse import urljoin, urlsplit, urldefrag, urlencode
 
@@ -15,6 +15,7 @@ import sys
 # Only links to article pages on the issuing authority's host enter the review queue.
 SOURCES = [
     ("上海市规划和自然资源局行业新闻", "上海", "https://ghzyj.sh.gov.cn/hyxw/", "/hyxw/"),
+    ("广州市规划和自然资源局工作动态", "广州", "https://ghzyj.gz.gov.cn/zwgk/gzdt/", "/zwgk/gzdt/"),
     ("住房和城乡建设部", "", "https://www.mohurd.gov.cn/gongkai/zc/wjk/", "/gongkai/zc/wjk/art/"),
     ("中国城市规划协会", "", "https://www.cacp.org.cn/", "/zccxghs/"),
     ("上海市规划和自然资源局", "上海", "https://ghzyj.sh.gov.cn/zcwj/cxgh/", "/zcwj/cxgh/"),
@@ -53,22 +54,26 @@ class Anchors(HTMLParser):
             self.active = None
 
 
+def fetch_page(page):
+    result = subprocess.run(["curl", "--silent", "--show-error", "--fail", "--location",
+                             "--proto", "=https", "--proto-redir", "=https", "--max-redirs", "3",
+                             "--max-time", "24", "--max-filesize", "4000000",
+                             "--write-out", "\n%{url_effective}", page], capture_output=True)
+    if result.returncode:
+        raise ValueError(result.stderr.decode(errors="replace").strip())
+    raw, final_url = result.stdout.rsplit(b"\n", 1)
+    if urlsplit(final_url.decode()).hostname != urlsplit(page).hostname:
+        raise ValueError("列表跨域跳转")
+    charset = re.search(br'charset\s*=\s*["\x27]?([\w-]+)', raw[:4096], re.I)
+    enc = charset[1].decode() if charset else "utf-8"
+    return raw.decode(enc, errors="replace")
+
+
 def collect(source):
     name, region, page, prefix = source
     try:
-        result = subprocess.run(["curl", "--silent", "--show-error", "--fail", "--location",
-                                 "--proto", "=https", "--proto-redir", "=https", "--max-redirs", "3",
-                                 "--max-time", "24", "--max-filesize", "4000000",
-                                 "--write-out", "\n%{url_effective}", page], capture_output=True)
-        if result.returncode:
-            raise ValueError(result.stderr.decode(errors="replace").strip())
-        raw, final_url = result.stdout.rsplit(b"\n", 1)
-        if urlsplit(final_url.decode()).hostname != urlsplit(page).hostname:
-            raise ValueError("列表跨域跳转")
-        charset = re.search(br'charset\s*=\s*["\x27]?([\w-]+)', raw[:4096], re.I)
-        enc = charset[1].decode() if charset else "utf-8"
         parser = Anchors()
-        parser.feed(raw.decode(enc, errors="replace"))
+        parser.feed(fetch_page(page))
         notices = {}
         found = 0
         for href, title in parser.links:
@@ -97,48 +102,74 @@ def key(url):
     return hashlib.sha256(url.encode()).hexdigest()[:20]
 
 
-def gh(*args):
-    return subprocess.check_output(["gh", *args], text=True, encoding="utf-8")
+class Metadata(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.fields = {}
+
+    def handle_starttag(self, tag, attrs):
+        attrs = dict(attrs)
+        if tag == "meta":
+            name = attrs.get("name") or attrs.get("property") or ""
+            self.fields[name.lower()] = attrs.get("content") or ""
 
 
-def scan(dry):
-    repo = os.environ.get("GITHUB_REPOSITORY", "word21335/planhot")
-    known = set()
-    if not dry:
-        pages = gh("api", "--paginate", "--slurp", f"repos/{repo}/issues?state=all&per_page=100")
-        for page in json.loads(pages):
-            for issue in page:
-                if issue["user"]["login"] == "github-actions[bot]":
-                    known.update(re.findall(r"<!-- planhot:([a-f0-9]{20}) -->", issue.get("body") or ""))
-    homepage = Path("index.html").read_text(encoding="utf-8")
-    lines, errors = [], []
-    with ThreadPoolExecutor(max_workers=4) as pool:
+DATE_TEXT = r"(20\d{2})[-年/.](\d{1,2})[-月/.](\d{1,2})"
+DOCUMENT = re.compile("废止|失效|征求意见|政策解读|印发|管理办法|实施细则|公示|批前|批后|标准编号|技术规程|规范性文件")
+EXAM = re.compile("考试|报名|准考证|资格核查|资格核验|成绩查询")
+
+
+def read_story(row):
+    html = fetch_page(row["url"])
+    meta = Metadata()
+    meta.feed(html)
+    fields = meta.fields
+    title = (fields.get("articletitle") or fields.get("og:title") or row["title"]).strip()
+    visible = unescape(re.sub(r"<[^>]+>", " ", html))
+    if not TOPIC.search(title) or DOCUMENT.search(title) or title[:12] not in visible and title != fields.get("articletitle"):
+        return None
+    stamp = next((fields[k] for k in ("pubdate", "publishdate", "article:published_time", "firstpublishedtime") if fields.get(k)), "")
+    matched = re.match(DATE_TEXT, stamp.strip()) if stamp else re.search(r"(?:发布日期|发布时间|发稿时间)\s*[：:]?\s*" + DATE_TEXT, visible)
+    if not matched:
+        return None
+    issued = date(*map(int, matched.groups()))
+    if not 0 <= (TODAY-issued).days < 7:
+        return None
+    category = "规划技术" if re.search("技术|三维|一张图|数字|智能", title) else "规划实践"
+    until = ""
+    if EXAM.search(title):
+        deadline = re.search(r"(?:报名截止(?:日期|时间)?|报名结束时间)\s*[：:]?\s*" + DATE_TEXT, visible)
+        if not deadline or "规划师" not in title:
+            return None
+        end = date(*map(int, deadline.groups()))
+        if end <= TODAY:
+            return None
+        until = end.isoformat()
+        category = "注规考试"
+    elif row["category"] in ("政策文件", "标准规范") and not any(word in row["source"] for word in ("新闻", "动态")):
+        return None
+    return dict(row, title=title, date=issued.isoformat(), category=category,
+                reviewed=TODAY.isoformat(), until=until, summary=fields.get("description", "").strip()[:160], withdraw=[])
+
+
+def update_news(history):
+    with ThreadPoolExecutor(max_workers=5) as pool:
         for name, rows, error in pool.map(collect, SOURCES):
-            print(name, error or f"{len(rows)} 条相关线索", flush=True)
-            if error:
-                errors.append(name)
-            for row in rows:
-                url = row["url"]
-                marker = key(url)
-                if marker in known or escape(url, quote=True) in homepage:
+            print(name, error or f"{len(rows)} 条线索", flush=True)
+            for row in rows[:20]:
+                if row["url"] in history or not TOPIC.search(row["title"]):
                     continue
-                known.add(marker)
-                decision = dict(**row, date="请填原文发布日期 YYYY-MM-DD", summary="", event="", reviewed="", until="", withdraw=[])
-                params = urlencode({"filename": f"decisions/{marker}.json", "value": json.dumps(decision, ensure_ascii=False, indent=2)})
-                label = "疑似效力变更" if NOTICE.search(row["title"]) else "待核对"
-                title = escape(row["title"]).replace("[", "［").replace("]", "］").replace("@", "＠")
-                lines.append(f"<!-- planhot:{marker} -->\n- **{label}** {title}（{name}） [官方原文](<{url}>) · [审核并发布](https://github.com/{repo}/new/main?{params})")
-    if lines and not dry:
-        intro = "打开原文核对发布日期、现行效力和考试时限。首次扫描含已有文件。只提交确认有效的条目。填入 date，可补 summary。同一事件的转载共用 event。政策、标准和考试核实后填写 reviewed（核对日期），until 填截止或失效前最后有效日；考试必须填写截止日才可上热点榜。失效旧条目的原文网址填入 withdraw 数组；只撤下旧文时将 category 改为 撤下。关闭此清单即归档。\n\n"
-        # Keep issue bodies below GitHub's length limit.
-        for start in range(0, len(lines), 12):
-            gh("issue", "create", "--repo", repo, "--title", f"规划资讯待审核 · {TODAY} · {start//12+1}", "--body", intro+"\n\n".join(lines[start:start+12]))
-    if errors:
-        print("未完成检查：" + "、".join(errors), file=sys.stderr)
-        sys.exit(1)
+                try:
+                    story = read_story(row)
+                except (ValueError, LookupError, OSError) as exc:
+                    print(name, row["url"], exc, flush=True)
+                    continue
+                if story:
+                    history[row["url"]] = story
+    return {url: row for url,row in history.items() if not row.get("until") or row["until"] > TODAY.isoformat()}
 
 
-def render():
+def render(history=None):
     page = Path("index.html").read_text(encoding="utf-8")
     match = re.search(r'(<section aria-label="资讯列表" id="articles">)(.*?)(</section>)', page, re.S)
     cards = {}
@@ -147,11 +178,14 @@ def render():
         parser.feed(card)
         cards[parser.links[0][0]] = card
     removed = set()
+    rows = [(key(url), row) for url,row in (history or {}).items() if url not in cards]
     for path in sorted(Path("decisions").glob("*.json")):
         row = json.loads(path.read_text(encoding="utf-8-sig"))
+        rows.append((path.stem, row))
+    for marker, row in rows:
         url = row["url"]
-        if path.stem != key(url) or urlsplit(url).scheme != "https" or urlsplit(url).netloc not in {urlsplit(s[2]).netloc for s in SOURCES}:
-            raise ValueError(f"不支持的原文地址 {path}")
+        if marker != key(url) or urlsplit(url).scheme != "https" or urlsplit(url).netloc not in {urlsplit(s[2]).netloc for s in SOURCES}:
+            raise ValueError(f"不支持的原文地址 {marker}")
         if not isinstance(row["withdraw"], list) or not all(isinstance(v,str) for v in row["withdraw"]):
             raise ValueError("withdraw 应为旧文网址数组")
         removed.update(row["withdraw"])
@@ -187,8 +221,13 @@ def render():
 
 
 if __name__ == "__main__":
-    if sys.argv[1] == "render":
+    if sys.argv[1] == "publish":
+        archive = Path("previous-news.json")
+        history = json.loads(archive.read_text(encoding="utf-8")) if archive.exists() else {}
+        history = update_news(history)
+        render(history)
+        Path("public/news.json").write_text(json.dumps(history, ensure_ascii=False), encoding="utf-8")
+    elif sys.argv[1] == "render":
         render()
     else:
-        scan("--dry-run" in sys.argv)
-
+        raise SystemExit("使用 publish 自动采集发布，或 render 离线生成网页")
