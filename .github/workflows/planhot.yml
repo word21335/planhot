@@ -9,18 +9,6 @@ on:
 
 permissions: {}
 jobs:
-  scan:
-    if: github.event_name != 'push' || contains(github.event.head_commit.message, '[scan]')
-    runs-on: ubuntu-latest
-    concurrency: planhot-scan
-    permissions:
-      contents: read
-      issues: write
-    steps:
-      - uses: actions/checkout@v4
-      - run: python3 planhot.py scan
-        env:
-          GH_TOKEN: ${{ github.token }}
   publish:
     runs-on: ubuntu-latest
     concurrency: planhot-publish
@@ -45,7 +33,15 @@ jobs:
             *) exit 1 ;;
           esac
           python3 standards.py
-      - run: python3 planhot.py render
+      - name: Automatically publish official planning news
+        run: |
+          code=$(curl -sSL --retry 2 --max-time 40 -o previous-news.json -w '%{http_code}' "https://word21335.github.io/planhot/news.json?run=${GITHUB_RUN_ID}")
+          case "$code" in
+            200) python3 -c "import json; assert isinstance(json.load(open('previous-news.json')), dict)" ;;
+            404) rm -f previous-news.json ;;
+            *) exit 1 ;;
+          esac
+          python3 planhot.py publish
       - uses: actions/upload-pages-artifact@v3
         with:
           path: public
