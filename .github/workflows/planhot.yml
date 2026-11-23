@@ -5,7 +5,8 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ['decisions/**', 'index.html', 'planhot.py', '.github/workflows/planhot.yml']
+    paths: ['decisions/**', 'index.html', 'planhot.py', 'standards.*', '.github/workflows/planhot.yml']
+
 permissions: {}
 jobs:
   scan:
@@ -21,11 +22,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
   publish:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     concurrency: planhot-publish
     permissions:
       contents: read
+      issues: read
       pages: write
       id-token: write
     environment:
@@ -33,6 +34,17 @@ jobs:
       url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
+      - name: Load last published catalogue and update it
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          code=$(curl -sSL --retry 2 --max-time 40 -o previous.json -w '%{http_code}' "https://word21335.github.io/planhot/standards.json?run=${GITHUB_RUN_ID}")
+          case "$code" in
+            200) python3 -c "import json; assert isinstance(json.load(open('previous.json'))['history'], dict)" && cp previous.json standards.json || exit 1 ;;
+            404) ;;
+            *) exit 1 ;;
+          esac
+          python3 standards.py
       - run: python3 planhot.py render
       - uses: actions/upload-pages-artifact@v3
         with:
