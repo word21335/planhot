@@ -15,12 +15,14 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
 @media(min-width:700px) and (max-width:940px){.shell{grid-template-columns:64px minmax(0,1fr)}.rail{padding:20px 6px}.brand{justify-content:center;margin:0 0 20px}.brand span{width:25px;height:25px;background:none;border:3px solid var(--accent);border-right-color:transparent}.brand:after,.rail-nav:before{display:none}.rail-nav button{height:56px;flex-direction:column;justify-content:center;gap:3px;font-size:11px}main{padding:24px 20px}}
 @media(max-width:699px){.shell{display:block}.rail{padding:8px 16px}.brand{font-size:17px;margin:0}.rail-nav{position:fixed;bottom:0;left:0;right:0;z-index:4;display:flex;background:white;border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom)}.rail-nav:before{display:none}.rail-nav button{flex:1;height:52px;flex-direction:column;justify-content:center;gap:2px;font-size:11px}main{padding:12px 16px 60px}.toolbar{flex-wrap:wrap}.filters{width:100%}.controls{float:none;justify-content:flex-end}.day{background:#f0f2ee;margin:12px -16px 0;padding:0 16px}article{border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;background:none;margin:0;padding:14px 0}article:before{display:none}article time{position:static}.bookmark{right:0}.nav{max-width:100%}}
 #more{display:grid;align-items:start;gap:22px;margin-top:20px}#more h2{font-size:14px;color:var(--muted);margin-bottom:8px}.settings{border:1px solid var(--line);background:white;border-radius:12px;overflow:hidden}.settings>*{display:flex;align-items:center;justify-content:space-between;min-height:54px;padding:0 16px}.settings>*+*{border-top:1px solid var(--line)}.settings select{border:1px solid var(--line);border-radius:7px;padding:5px;background:var(--bg)}@media(min-width:941px){#more{grid-template-columns:repeat(2,minmax(0,1fr))}}:root[data-dark=true]{color-scheme:dark;--bg:#161d20;--ink:#eaf0ef;--muted:#b2bfbe;--line:#364245;--accent:#70c6cd}:root[data-dark=true] :is(aside,article,.settings,.rail-nav,.unread,select){background:#20292c}:root[data-dark=true] :is(.nav,#query,.day,.category,.nav button[aria-pressed=true],.rail-nav button[aria-pressed=true]){background:#303c40;color:var(--ink)}:root[data-font=browser]{font-family:initial}
+.desk-links h2{font-size:11px;font-weight:500;color:var(--muted);margin:15px 10px 4px}.desk-links a{display:block;padding:6px 14px;border-radius:8px;font-size:14px;color:var(--muted)}.desk-links a:hover{background:#176b7510;color:var(--accent)}.short-label{display:none}.rail{max-height:100dvh;overflow:auto}#highlights{margin:4px 0 16px;padding:15px 18px;border:1px solid var(--line);border-radius:12px;background:#fff}#highlights header{display:flex;align-items:center;justify-content:space-between}#highlights h2{font-size:16px}#highlights header a{font-size:13px;color:var(--accent)}#ranked{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 24px;margin:10px 0 0;padding:0;list-style:none;counter-reset:rank}#ranked li{counter-increment:rank}#ranked a{display:flex;align-items:center;gap:10px;padding:5px 0;font-size:14px}#ranked a:before{content:counter(rank);font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums}#ranked small{margin-left:auto;color:var(--muted)}:root[data-dark=true] #highlights{background:#20292c}@media(max-width:940px){.desk-links,.wide-label{display:none}.short-label{display:inline}}@media(max-width:699px){#ranked{grid-template-columns:1fr}.rail{overflow:visible}}
 </style>
 </head>
 <body>
   <div class="shell">
   <aside><div class="rail"><a href="#heading" class="brand" aria-label="PlanHot 首页"><span></span></a>
-    <nav class="rail-nav" aria-label="主导航"><button type="button" data-view="精选" aria-pressed="true"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2.5L4.5 13.5H11l-1 8L19.5 10.5H13z"></path></svg></i>精选</button><button type="button" data-view="全部" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"></path><circle cx="3.5" cy="6" r="1"></circle><circle cx="3.5" cy="12" r="1"></circle><circle cx="3.5" cy="18" r="1"></circle></svg></i>全部</button><button type="button" data-view="热点" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4 0 7-2.7 7-7 0-3.6-2.4-6.2-4-8-.5 2-1.6 3.4-3 4 .3-3-1-6-4-8 0 4-4 6.5-4 11 0 4.3 3 8 8 8z"></path></svg></i>热点</button><button type="button" data-view="日报" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"></rect><path d="M8.5 8h7M8.5 12h7M8.5 16h4"></path></svg></i>日报</button><button type="button" data-view="我的" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.8"></circle><path d="M4.8 20.2c.9-3.5 3.8-5.7 7.2-5.7s6.3 2.2 7.2 5.7"></path></svg></i>我的</button></nav>
+    <nav class="rail-nav" aria-label="主导航"><button type="button" data-view="精选" aria-pressed="true"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 2.5L4.5 13.5H11l-1 8L19.5 10.5H13z"></path></svg></i>精选</button><button type="button" data-view="全部" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13"></path><circle cx="3.5" cy="6" r="1"></circle><circle cx="3.5" cy="12" r="1"></circle><circle cx="3.5" cy="18" r="1"></circle></svg></i><span class="wide-label">全部规划动态</span><span class="short-label">全部</span></button><button type="button" data-view="热点" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22c4 0 7-2.7 7-7 0-3.6-2.4-6.2-4-8-.5 2-1.6 3.4-3 4 .3-3-1-6-4-8 0 4-4 6.5-4 11 0 4.3 3 8 8 8z"></path></svg></i>热点</button><button type="button" data-view="日报" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3.5" width="14" height="17" rx="2"></rect><path d="M8.5 8h7M8.5 12h7M8.5 16h4"></path></svg></i><span class="wide-label">规划日报</span><span class="short-label">日报</span></button><button type="button" data-view="我的" aria-pressed="false"><i aria-hidden="true"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.8"></circle><path d="M4.8 20.2c.9-3.5 3.8-5.7 7.2-5.7s6.3 2.2 7.2 5.7"></path></svg></i>我的</button></nav>
+    <div class="desk-links"><a href="#saved">我的收藏</a><h2>规划专题</h2><div id="specialties"></div><h2>更多</h2><a href="#more">阅读设置</a><a href="https://github.com/word21335/planhot/commits/main/">更新日志</a><a href="https://github.com/word21335/planhot/issues/new">意见反馈</a></div>
   </div></aside>
   <main>
     <div class="heading"><h1 id="heading">精选</h1></div>
@@ -39,6 +41,7 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
       <span class="count" id="count" role="status">共 6 条资讯</span>
     </div>
     </div>
+    <section id="highlights" hidden><header><h2>当前规划热点</h2><a href="#hot">查看榜单 ›</a></header><ol id="ranked"></ol></section>
     <div class="controls"><label id="day-picker" hidden>日报日期 <select id="report-day"></select></label><select aria-label="地区" id="region"><option value="">全部地区</option><option>上海</option><option>广州</option><option>深圳</option><option>陕西</option><option>河南</option><option>甘肃</option></select><label class="unread"><input type="checkbox" id="unread">只看未读</label></div>
     <p id="empty" hidden>没有符合条件的资讯。可以清空搜索或更换筛选条件。</p>
     <section aria-label="资讯列表" id="articles">
@@ -163,6 +166,7 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
       button.setAttribute("aria-pressed", String(option.selected));
       button.addEventListener("click", () => {
         category.value = option.value;
+        document.querySelector("#highlights").hidden = !!option.value || !["精选","热点"].includes(view);
         document.getElementById("heading").textContent = option.value || "精选";
         for (const item of sections.children) item.setAttribute("aria-pressed", String(item === button));
         filter();
@@ -172,6 +176,21 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
     for (const day of timeline.keys()) reportDay.add(new Option(day,day));
     reportDay.onchange = filter;
     unread.onchange = filter;
+    const topics = [...topicCounts].sort((a,b) => b[1]-a[1]);
+    for (const [name,total] of topics) {
+      const entry = document.createElement("li");
+      const link = document.createElement("a");
+      link.href = "#topic-"+encodeURIComponent(name);
+      link.textContent = name;
+      const count = document.createElement("small");
+      count.textContent = "收录 "+total+" 条";
+      link.append(count); entry.append(link); document.querySelector("#ranked").append(entry);
+    }
+    for (const name of ["政策文件","标准规范","注规考试","规划技术"]) {
+      const link = document.createElement("a");
+      link.href = "#topic-"+encodeURIComponent(name);
+      link.textContent = name; document.querySelector("#specialties").append(link);
+    }
     const routes = {"精选":"feed","全部":"all","热点":"hot","日报":"daily","我的":"more"};
     const tabs = [...document.querySelectorAll(".rail-nav button")];
     function navigate() {
@@ -186,6 +205,9 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
       sections.firstElementChild.click();
       document.querySelector("#heading").textContent = route === "saved" ? "我的收藏" : view;
       for (const tab of tabs) tab.setAttribute("aria-pressed", String(tab === active));
+      const topic = [...category.options].find(option => route === "topic-"+encodeURIComponent(option.value));
+      if (topic) sections.children[topic.index].click();
+      document.querySelector("#highlights").hidden = !["feed","hot"].includes(route);
       window.scrollTo(0,0);
     }
     for (const tab of tabs) tab.onclick = () => { location.hash = routes[tab.dataset.view]; };
