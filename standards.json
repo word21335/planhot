@@ -1,0 +1,42 @@
+{
+  "rows": [
+    {
+      "number": "GB/T 47952-2026",
+      "title": "基本公共服务设施电子地图建设指引",
+      "status": "现行",
+      "date": "2026-07-02",
+      "source": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=DE5AC9A0E95DB1A5E3FAE0ED139C2971",
+      "checked": "2026-11-23"
+    },
+    {
+      "number": "GB/T 47590-2026",
+      "title": "城市和社区可持续发展 高等院校校园 实施GB/T 40759指南",
+      "status": "现行",
+      "date": "2026-05-25",
+      "source": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=930C1CE3C798A6176E4CC46C87BEF316",
+      "checked": "2026-11-23"
+    },
+    {
+      "number": "GB/T 47464-2026",
+      "title": "城市道路交通信息监测和显示设备设置规范",
+      "status": "现行",
+      "date": "2026-04-30",
+      "source": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=942617F9ADFC6FBBABBC76A31357EE48",
+      "checked": "2026-11-23"
+    },
+    {
+      "number": "GB/T 21379-2025",
+      "title": "交通管理信息属性分类与编码  城市道路",
+      "status": "现行",
+      "date": "2025-12-31",
+      "source": "https://openstd.samr.gov.cn/bzgk/std/newGbInfo?hcno=E6D4D90F1083384F45BAF03011A99220",
+      "checked": "2026-11-23"
+    }
+  ],
+  "history": {
+    "GB/T47952-2026": "2026-11-23",
+    "GB/T47590-2026": "2026-11-23",
+    "GB/T47464-2026": "2026-11-23",
+    "GB/T21379-2025": "2026-11-23"
+  }
+}

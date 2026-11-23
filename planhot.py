@@ -180,6 +180,8 @@ def render():
     out = Path("public")
     out.mkdir(exist_ok=True)
     (out/"index.html").write_text(page, encoding="utf-8")
+    for asset in ("standards.html","standards.json"):
+        (out/asset).write_bytes(Path(asset).read_bytes())
     (out/"more").mkdir(exist_ok=True)
     (out/"more"/"index.html").write_text(page, encoding="utf-8")
 

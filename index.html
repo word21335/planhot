@@ -196,6 +196,10 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
       button.textContent = option.text;
       button.setAttribute("aria-pressed", String(option.selected));
       button.addEventListener("click", () => {
+        if (option.value === "标准规范") {
+          location.assign(new URL((location.pathname.endsWith("/more/") ? "../" : "./") + "standards.html", location.href));
+          return;
+        }
         category.value = option.value;
         document.querySelector("#highlights").hidden = !!option.value || !["精选","热点"].includes(view);
         document.getElementById("heading").textContent = option.value || "精选";
@@ -212,7 +216,7 @@ article{position:relative;margin:0 0 12px 86px;padding:15px 18px 14px;border:1px
     document.addEventListener("visibilitychange", () => { if (!document.hidden) { refreshRanking(); filter(); } });
     for (const name of ["政策文件","标准规范","注规考试","规划技术"]) {
       const link = document.createElement("a");
-      link.href = "#topic-"+encodeURIComponent(name);
+      link.href = name === "标准规范" ? (location.pathname.endsWith("/more/") ? "../standards.html" : "./standards.html") : "#topic-"+encodeURIComponent(name);
       link.textContent = name; document.querySelector("#specialties").append(link);
     }
     const routes = {"精选":"feed","全部":"all","热点":"hot","日报":"daily","我的":"more"};

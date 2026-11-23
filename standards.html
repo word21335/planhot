@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>标准规范资料库 · PlanHot</title><style>
+*{box-sizing:border-box}body{background:#faf9f6;color:#202a30;font:16px/1.6 system-ui,"Microsoft YaHei",sans-serif;margin:0}main{max-width:920px;margin:auto;padding:28px 18px}a{color:#176b75}h1{margin:18px 0 4px;font-size:26px}p{color:#546267}input,button{font:inherit;padding:8px 12px;border:1px solid #cbd5d2;border-radius:8px;background:white}input{width:100%}button{cursor:pointer}article,details{padding:14px 18px;margin:12px 0;background:white;border:1px solid #dfe4e1;border-radius:12px}h2{font-size:18px;margin:4px 0}small{color:#58676c}summary{cursor:pointer;font-weight:650}form{display:grid;gap:10px;margin-top:12px}label{display:grid;gap:3px}#confirm{width:auto}article a{margin-right:16px}#submitlink[hidden]{display:none}
+</style></head><body><main><a href="./">‹ PlanHot 精选</a><h1>标准规范资料库</h1><p>按官方发布日期排列。每日最多收录 4 条，标准号包含版本年份。</p>
+<input id="q" type="search" aria-label="检索标准" placeholder="搜索标准名称或标准号">
+<details><summary>手动提交标准 PDF</summary><form id="form">
+<label>标准号（含年份）<input id="num" required placeholder="GB/T 43214-2023"></label><label>标准名称<input id="titleField" required maxlength="200"></label>
+<label>发布日期<input id="issued" type="date" required></label><label>官方原文网址<input id="src" type="url" required></label><label>PDF 文件（最大 20 MB）<input id="pdf" type="file" accept=".pdf,application/pdf" required></label>
+<label style="display:block"><input id="confirm" type="checkbox" required> 我已核实现行状态，且有权公开分享此文件。</label>
+<button>检查重复并准备提交</button><output id="msg" role="status"></output><a id="submitlink" hidden target="_blank" rel="noopener">打开 GitHub，附上刚才的 PDF 并提交</a></form></details>
+<p id="status" role="status">正在读取资料库…</p><div id="list"></div></main><script>
+const el=id=>document.getElementById(id);
+const normalize=s=>s.normalize("NFKC").toUpperCase().replace(/\s/g,"").replace(/[—–]/g,"-");
+let rows;
+function draw(){
+ const term=normalize(el("q").value);
+ const shown=rows.filter(r=>normalize(r.title+r.number).includes(term));
+ el("status").textContent="共 "+shown.length+" 条";
+ el("list").replaceChildren(...shown.map(r=>{
+ const box=document.createElement("article");
+ const meta=document.createElement("small");meta.textContent=r.number+" · "+r.date+" 发布";
+ const title=document.createElement("h2");title.textContent=r.title;
+ const info=document.createElement("small");info.textContent="最近核对 "+r.checked+" · "+r.status;
+ const links=document.createElement("div");
+ const a=document.createElement("a");a.textContent="官方详情与全文入口 ↗";a.href=r.source;a.target="_blank";a.rel="noopener";links.append(a);
+ if(r.download){const d=a.cloneNode();d.textContent="下载 PDF";d.href=r.download;links.append(d);}
+ box.append(meta,title,info,links);return box;}));
+}
+fetch("standards.json",{cache:"no-cache"}).then(r=>{if(!r.ok)throw Error();return r.json()}).then(db=>{rows=db.rows;draw()}).catch(()=>el("status").textContent="目录读取失败，请刷新重试。");
+el("q").oninput=()=>{if(rows)draw()};
+el("form").oninput=()=>{el("submitlink").hidden=true;el("msg").textContent=""};
+el("form").onsubmit=async e=>{
+ e.preventDefault();el("submitlink").hidden=true;
+ try {
+ if(!rows)throw Error("请等目录加载后再检查。");
+ const number=el("num").value.trim(),file=el("pdf").files[0];
+ if(!/\d[-—–]\d{4}$/.test(number))throw Error("请填写含版本年份的标准号。");
+ if(rows.some(r=>normalize(r.number)===normalize(number)))throw Error("这个版本的标准已经收录。");
+ if(file.size>20*1024*1024||await file.slice(0,5).text()!=="%PDF-")throw Error("请选择 20 MB 以内的 PDF。");
+ const url=new URL(el("src").value);if(url.protocol!=="https:"||!url.hostname.endsWith(".gov.cn"))throw Error("请填写政府部门的 HTTPS 标准原文网址。");
+ const digest=await crypto.subtle.digest("SHA-256",await file.arrayBuffer());
+ const hash=Array.from(new Uint8Array(digest),v=>v.toString(16).padStart(2,"0")).join("");
+ if(rows.some(r=>r.sha256===hash))throw Error("该文件内容已经收录，改名也无需重传。");
+ const meta={title:el("titleField").value.trim(),source:url.href,date:el("issued").value};
+ const params=new URLSearchParams({title:"规范上传 "+number+" "+hash,body:"<!--planhot-standard "+JSON.stringify(meta)+" -->\n已核实现行且可公开分享。请在此处附上同一个 PDF 后提交。"});
+ el("submitlink").href="https://github.com/word21335/planhot/issues/new?"+params;
+ el("submitlink").hidden=false;el("msg").textContent="本地检查通过。使用站主账号提交后，每日任务将复验标准号和附件指纹。";
+ }catch(err){el("msg").textContent=err.message}
+};
+</script></body></html>
